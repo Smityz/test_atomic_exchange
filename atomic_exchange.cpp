@@ -13,20 +13,15 @@ using namespace std;
 class bar
 {
 public:
-    explicit bar(int x) : num(x), a(3), b(2)
+    explicit bar(vector<int> &in) : num(-1)
     {
+        for (auto iter : in)
+            v.push_back(iter);
     }
     int get_num()
     {
-        a += b;
-        usleep(10);
-        b += a;
-        usleep(10);
-        b += a + b;
-        if (abs(a) > 100)
-            a = 0;
-        if (abs(b) > 100)
-            b = 0;
+        for (auto iter : v)
+            num = max(iter, num);
         return num;
     }
     ~bar()
@@ -35,10 +30,9 @@ public:
     }
 
 private:
-    int num, a, b;
+    int num;
+    vector<int> v;
 };
-
-vector<int> v;
 
 shared_ptr<bar> ptr_store;
 
@@ -46,37 +40,31 @@ int st;
 
 void get_func()
 {
-    for (int t = 0; t <= 10; t++)
+    while (1)
     {
-        st = clock();
-        for (int i = 0; i <= 1000; i++)
-        {
-            ptr_store->get_num();
-        }
-        printf("lock version: %ld\n", clock() - st);
+        ptr_store->get_num();
     }
 }
 
 void set_func()
 {
-    for (int i = 0; i < 10000; i++)
+    while (1)
     {
         usleep(10);
         //atomic_exchange(&ptr_store, make_shared<bar>(i));
-        ptr_store = make_shared<bar>(i);
+        vector<int> v;
+        default_random_engine e;
+        int sz = e() % 100;
+        for (int i = 0; i < sz; i++)
+            v.push_back(e() % 100);
+        ptr_store = make_shared<bar>(v);
     }
 }
 
 int main()
 {
-    st = clock();
-    auto pt = make_shared<bar>(1);
-    for (int i = 0; i <= 1000; i++)
-    {
-        pt->get_num();
-    }
-    printf("free version: %ld\n", clock() - st);
-    ptr_store = make_shared<bar>(-1);
+    vector<int> v = {1, 2, 3};
+    ptr_store = make_shared<bar>(v);
     std::thread t1(get_func);
     std::thread t2(set_func);
     t1.join();
