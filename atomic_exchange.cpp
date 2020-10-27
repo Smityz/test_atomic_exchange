@@ -21,12 +21,24 @@ public:
     int get_num()
     {
         for (auto iter : v)
+        {
             num = max(iter, num);
+            usleep(10);
+        }
         return num;
     }
     ~bar()
     {
-        printf("bar:%d is destroyed\n", num);
+        //printf("bar:%d is destroyed\n", num);
+        if (num >= 100)
+        {
+            printf("Fault:%d\n", num);
+            for (auto iter : v)
+            {
+                printf("%d ", iter);
+            }
+            printf("\n");
+        }
     }
 
 private:
@@ -42,6 +54,7 @@ void get_func()
 {
     while (1)
     {
+        weak_ptr<bar> ptr_weak = ptr_store;
         printf("get_num: %d\n", ptr_store->get_num());
     }
 }
@@ -51,12 +64,12 @@ void set_func()
     while (1)
     {
         usleep(10);
-        //atomic_exchange(&ptr_store, make_shared<bar>(i));
         vector<int> v;
         int sz = rand() % 100;
         for (int i = 0; i < sz; i++)
             v.push_back(rand() % 100);
         ptr_store = make_shared<bar>(v);
+        //atomic_exchange(&ptr_store, make_shared<bar>(v));
     }
 }
 
