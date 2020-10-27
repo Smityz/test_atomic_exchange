@@ -26,7 +26,7 @@ public:
     }
     ~bar()
     {
-        // printf("bar:%d is destroyed\n", num);
+        printf("bar:%d is destroyed\n", num);
     }
 
 private:
@@ -42,7 +42,7 @@ void get_func()
 {
     while (1)
     {
-        ptr_store->get_num();
+        printf("get_num: %d", ptr_store->get_num());
     }
 }
 
