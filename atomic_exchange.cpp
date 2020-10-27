@@ -42,7 +42,7 @@ void get_func()
 {
     while (1)
     {
-        printf("get_num: %d", ptr_store->get_num());
+        printf("get_num: %d\n", ptr_store->get_num());
     }
 }
 
@@ -53,16 +53,16 @@ void set_func()
         usleep(10);
         //atomic_exchange(&ptr_store, make_shared<bar>(i));
         vector<int> v;
-        default_random_engine e;
-        int sz = e() % 100;
+        int sz = rand() % 100;
         for (int i = 0; i < sz; i++)
-            v.push_back(e() % 100);
+            v.push_back(rand() % 100);
         ptr_store = make_shared<bar>(v);
     }
 }
 
 int main()
 {
+    srand((unsigned)time(NULL));
     vector<int> v = {1, 2, 3};
     ptr_store = make_shared<bar>(v);
     std::thread t1(get_func);
