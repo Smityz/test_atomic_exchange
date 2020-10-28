@@ -6,7 +6,7 @@
 #include <functional>
 #include <atomic>
 #include <unistd.h>
-// #include <bits/shared_ptr_atomic.h>
+#include <bits/shared_ptr_atomic.h>
 
 using namespace std;
 
@@ -23,22 +23,12 @@ public:
         for (auto iter : v)
         {
             num = max(iter, num);
-            usleep(10);
         }
-        return num;
-    }
-    ~bar()
-    {
-        //printf("bar:%d is destroyed\n", num);
         if (num >= 100)
         {
-            printf("Fault:%d\n", num);
-            for (auto iter : v)
-            {
-                printf("%d ", iter);
-            }
-            printf("\n");
+            printf("Fault %d\n", num);
         }
+        return num;
     }
 
 private:
@@ -52,24 +42,22 @@ int st;
 
 void get_func()
 {
-    while (1)
+    for (int k = 0; k <= 10000; k++)
     {
-        weak_ptr<bar> ptr_weak = ptr_store;
-        printf("get_num: %d\n", ptr_store->get_num());
+        auto temp = atomic_load_explicit(&ptr_store, std::memory_order_seq_cst);
+        printf("Get_num %d\n", temp->get_num());
     }
 }
 
 void set_func()
 {
-    while (1)
+    for (int k = 0; k <= 10000; k++)
     {
-        usleep(10);
         vector<int> v;
         int sz = rand() % 100;
         for (int i = 0; i < sz; i++)
             v.push_back(rand() % 100);
-        ptr_store = make_shared<bar>(v);
-        //atomic_exchange(&ptr_store, make_shared<bar>(v));
+        atomic_exchange(&ptr_store, make_shared<bar>(v));
     }
 }
 
@@ -83,3 +71,5 @@ int main()
     t1.join();
     t2.join();
 }
+
+// g++ atomic_exchange.cpp -o atomic_exchange -pthread && ./atomic_exchange > atomic_exchange.out
