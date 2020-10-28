@@ -24,6 +24,7 @@ public:
         {
             num = max(iter, num);
         }
+        usleep(10);
         if (num >= 100)
         {
             printf("Fault %d\n", num);
