@@ -91,6 +91,7 @@ void set_func_lock()
     auto_write_lock l(_lock);
     for (int k = 0; k <= max_write_times; k++)
     {
+        usleep((max_read_times / max_write_times) / 10);
         vector<int> v;
         int sz = rand() % 100;
         for (int i = 0; i < sz; i++)
